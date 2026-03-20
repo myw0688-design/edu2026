@@ -1,386 +1,333 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자율주행차의 윤리적 선택 - HTML Presentation</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>인공지능 기초 수업</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // Tailwind Configuration for Dark Mode
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            950: '#0f172a',
+                            900: '#1e293b',
+                            800: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+
+        // Theme Toggle Logic
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        initTheme();
+    </script>
     <style>
-/* 1. 디자인 시스템 설정 */
-:root {
-  --primary-bg: #0f172a;      /* 심해 청색 */
-  --secondary-bg: #1e293b;    /* 슬레이트 청색 */
-  --accent-cyan: #22d3ee;     /* 시안 (강조색) */
-  --accent-hover: #0891b2;    /* 호버용 시안 */
-  --text-main: #f8fafc;       /* 밝은 흰색 */
-  --text-muted: #94a3b8;      /* 뮤트 그레이 */
-  --white: #ffffff;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  background-color: #020617;
-  display: grid;
-  gap: 40px;
-  grid-template-columns: 1fr;
-  margin: 0;
-  min-height: 100vh;
-  padding: 40px 0;
-  place-items: center;
-  font-family: 'Noto Sans KR', 'Lato', sans-serif;
-}
-
-/* 상단 홈 버튼 스타일 */
-.nav-header {
-  position: fixed;
-  top: 20px;
-  left: 40px;
-  z-index: 100;
-}
-
-.btn-home {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  color: var(--text-main);
-  padding: 10px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
-}
-
-.btn-home:hover {
-  background: var(--accent-cyan);
-  color: var(--primary-bg);
-  border-color: var(--accent-cyan);
-  transform: translateX(5px);
-}
-
-.slide-container {
-  align-items: center;
-  background-color: var(--primary-bg);
-  border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  height: 720px;
-  justify-content: center;
-  overflow: hidden;
-  padding: 60px;
-  position: relative;
-  width: 1280px;
-  color: var(--text-main);
-}
-
-/* 추상적 배경 장식 */
-.slide-container::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  right: -10%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.05) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.slide-container::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-cyan), transparent);
-  z-index: 1;
-}
-
-.slide-container > * { position: relative; z-index: 2; }
-
-/* 타이틀 스타일 */
-.slide-container h1 { font-family: 'Poppins', 'Noto Sans KR', sans-serif; font-size: 72px; margin: 0; letter-spacing: -1px; text-align: center; color: var(--accent-cyan); }
-.slide-container .slide-title { font-family: 'Poppins', 'Noto Sans KR', sans-serif; font-size: 40px; font-weight: 700; margin-bottom: 40px; width: 100%; border-left: 6px solid var(--accent-cyan); padding-left: 20px; }
-
-/* 버튼 스타일 */
-.btn-info {
-  background-color: transparent;
-  border: 2px solid var(--accent-cyan);
-  color: var(--accent-cyan);
-  padding: 12px 28px;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 50px;
-  cursor: pointer;
-  margin-top: 30px;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn-info:hover {
-  background-color: var(--accent-cyan);
-  color: var(--primary-bg);
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
-}
-
-/* 모달(팝업) 스타일 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(2, 6, 23, 0.9);
-  display: none; /* 기본적으로 숨김 */
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(8px);
-}
-
-.modal-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-  background: var(--secondary-bg);
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  box-shadow: 0 0 50px rgba(0,0,0,0.5);
-  animation: modalFadeIn 0.4s ease-out;
-}
-
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.modal-close {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  background: var(--accent-cyan);
-  color: var(--primary-bg);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 20px;
-  border: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.modal-content img {
-  max-width: 100%;
-  max-height: 80vh;
-  display: block;
-  border-radius: 8px;
-}
-
-/* 기존 스타일 유지 */
-.subtitle { font-size: 24px; color: var(--text-muted); margin-top: 20px; text-align: center; max-width: 800px; }
-.content-area { display: flex; flex-direction: column; flex-grow: 1; justify-content: center; width: 100%; }
-.two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; width: 100%; }
-.image-wrapper { border-radius: 16px; overflow: hidden; height: 400px; box-shadow: 0 10px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
-.image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-.tile { background-color: var(--secondary-bg); border-radius: 16px; padding: 40px; border: 1px solid rgba(34, 211, 238, 0.2); transition: transform 0.3s ease; }
-.highlight-number { font-size: 160px; font-weight: 700; color: var(--accent-cyan); font-family: 'Poppins'; line-height: 1; text-align: center; }
-.number-label { font-size: 28px; color: var(--text-muted); text-align: center; margin-top: 10px; }
-.bar-container { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-.bar { display: flex; align-items: center; gap: 20px; }
-.bar .label { flex: 0 0 250px; text-align: right; font-size: 18px; color: var(--text-muted); font-weight: 700; }
-.bar-inner { background: #334155; height: 32px; flex-grow: 1; border-radius: 16px; overflow: hidden; position: relative; }
-.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-cyan), #0ea5e9); display: flex; align-items: center; padding-left: 15px; font-weight: 700; font-size: 14px; color: #020617; }
-table { width: 100%; border-collapse: collapse; background: var(--secondary-bg); border-radius: 12px; overflow: hidden; }
-th { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); padding: 20px; text-align: left; font-size: 20px; }
-td { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 18px; }
-.bullet-list ul { list-style: none; padding: 0; }
-.bullet-list li { position: relative; padding-left: 40px; margin-bottom: 20px; font-size: 20px; line-height: 1.6; }
-.bullet-list li i { position: absolute; left: 0; top: 5px; color: var(--accent-cyan); font-size: 24px; }
-.section-title-layout { text-align: center; width: 100%; }
-.section-title-layout hr { width: 100px; height: 6px; background: var(--accent-cyan); border: none; margin: 40px auto; border-radius: 3px; }
-.section-title-layout h2 { font-size: 64px; }
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .light .glass-card {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+        .light .hero-gradient {
+            background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
+        }
+        .accent-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
     </style>
 </head>
-<body>
+<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-white min-h-screen">
 
-<!-- 상단 네비게이션 헤더 -->
-<div class="nav-header">
-    <a href="../index.html" class="btn-home">
-        <i class="fa-solid fa-house"></i> 홈
-    </a>
-</div>
-
-<!-- Slide 1: Title Slide -->
-<div class="slide-container" id="slide1">
-    <div class="content-area" style="text-align: center; align-items: center;">
-        <h2 style="font-size: 24px; color: var(--accent-cyan); letter-spacing: 4px; margin-bottom: 20px;">시작하기</h2>
-        <h1>죽음의 선택:</h1>
-        <h2 style="font-size: 48px; color: var(--white); margin-top: 10px;">우리는 준비되었는가?</h2>
-        <p class="subtitle">모럴 머신(Moral Machine)이 던지는 5가지 충격적 질문<br>인공지능 윤리와 자율주행의 실존적 결정</p>
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-card px-6 py-4 flex justify-between items-center transition-all">
+        <div class="text-2xl font-extrabold tracking-tighter accent-gradient bg-clip-text text-transparent">
+            AI FOUNDATION
+        </div>
+        <nav class="hidden md:flex space-x-8 text-sm font-medium">
+            <a href="#home" class="hover:text-indigo-500 dark:hover:text-indigo-400 transition">홈</a>
+            <a href="#ethics" class="hover:text-indigo-500 dark:hover:text-indigo-400 transition">AI 윤리</a>
+            <a href="#learning" class="hover:text-indigo-500 dark:hover:text-indigo-400 transition">AI 학습</a>
+        </nav>
         
-        <!-- 인포그래픽 버튼 -->
-        <button class="btn-info" onclick="openModal()">
-            <i class="fa-solid fa-chart-line"></i> 인포그래픽 보기
-        </button>
-    </div>
-</div>
+        <div class="flex items-center gap-4">
+            <!-- Theme Toggle Button -->
+            <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:scale-110 transition-all shadow-sm">
+                <i class="fas fa-sun block dark:hidden"></i>
+                <i class="fas fa-moon hidden dark:block"></i>
+            </button>
+            <div class="text-sm bg-indigo-600 px-4 py-2 rounded-full font-bold text-white shadow-lg shadow-indigo-500/30">정보 수업</div>
+        </div>
+    </header>
 
-<!-- 모달 레이어 -->
-<div class="modal-overlay" id="imageModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
-        <img src="04.png" alt="윤리적 선택 인포그래픽" onerror="this.src='https://via.placeholder.com/800x600?text=Image+Not+Found+(04.png)'">
-    </div>
-</div>
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient pt-40 pb-20 px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-block px-3 py-1 mb-6 border border-indigo-500/30 rounded-full text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-widest animate-pulse">
+                Future Technology Education
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                인공지능의 세계로<br><span class="text-indigo-600 dark:text-indigo-500">여러분을 초대합니다</span>
+            </h1>
+            <p class="text-slate-600 dark:text-slate-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+                데이터로부터 지능이 탄생하는 원리를 이해하고, <br>기술과 인간이 공존하기 위한 올바른 윤리 의식을 배웁니다.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <!-- Link updated to ../01/index.html -->
+                <a href="../01/index.html" class="accent-gradient px-8 py-4 rounded-xl font-bold text-white hover:scale-105 transition-transform shadow-xl shadow-indigo-500/20">
+                    <i class="fas fa-balance-scale mr-2"></i>AI 윤리 탐구
+                </a>
+                <a href="#learning" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+                    <i class="fas fa-brain mr-2"></i>AI 학습 체험
+                </a>
+            </div>
+        </div>
+    </section>
 
-<!-- Slide 2: Section Title (1. Intro) -->
-<div class="slide-container" id="slide2">
-    <div class="section-title-layout">
-        <h2 style="font-size: 32px; color: var(--accent-cyan); margin-bottom: 10px;">CHAPTER 01</h2>
-        <h2>알고리즘이 마주한<br>생사의 갈림길</h2>
-        <hr>
-    </div>
-</div>
-
-<!-- Slide 3: Scenario -->
-<div class="slide-container" id="slide3">
-    <h2 class="slide-title">트롤리 딜레마의 현대적 변주</h2>
-    <div class="content-area">
-        <div class="two-column">
-            <div>
-                <p style="font-size: 22px; line-height: 1.8;">"내리막길에서 브레이크가 고장 난 당신의 자율주행차."</p>
-                <div class="bullet-list" style="margin-top: 30px;">
-                    <ul>
-                        <li><i class="fa-solid fa-triangle-exclamation"></i> <strong>직진 시:</strong> 무단횡단 중인 노인과 어린이를 침</li>
-                        <li><i class="fa-solid fa-shuffle"></i> <strong>핸들 조작 시:</strong> 벽에 부딪혀 탑승자인 당신이 희생</li>
-                        <li><i class="fa-solid fa-robot"></i> <strong>실존적 결정:</strong> 철학적 가설이 이제는 코드로 구현되어야 함</li>
-                    </ul>
+    <!-- Ethics Section -->
+    <section id="ethics" class="py-24 px-6 bg-slate-50 dark:bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-12">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-500 text-2xl">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold">인공지능 윤리</h2>
+                    <p class="text-slate-500 dark:text-slate-400">우리가 고민해야 할 핵심 가치</p>
                 </div>
             </div>
-            <div class="image-wrapper">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/1687887884880364745" alt="자율주행차 딜레마 시나리오">
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Core Values -->
+                <div class="space-y-4">
+                    <div class="glass-card p-6 rounded-2xl hover:bg-white dark:hover:bg-indigo-500/10 transition shadow-sm dark:shadow-none">
+                        <h3 class="text-xl font-bold mb-2 text-indigo-600 dark:text-indigo-400">01. 인간 존엄성</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm">AI는 인간의 생명과 정신적/신체적 안녕을 훼손해서는 안 됩니다.</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl hover:bg-white dark:hover:bg-indigo-500/10 transition shadow-sm dark:shadow-none">
+                        <h3 class="text-xl font-bold mb-2 text-purple-600 dark:text-purple-400">02. 공정성과 비차별</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm">데이터의 편향으로 인해 특정 집단이 차별받지 않도록 설계해야 합니다.</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl hover:bg-white dark:hover:bg-indigo-500/10 transition shadow-sm dark:shadow-none">
+                        <h3 class="text-xl font-bold mb-2 text-pink-600 dark:text-pink-400">03. 책임성과 투명성</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm">AI가 내린 결정의 이유를 설명할 수 있어야 하며 결과에 책임을 져야 합니다.</p>
+                    </div>
+                </div>
+
+                <!-- Ethics Navigation Area -->
+                <div class="bg-white dark:bg-slate-800/50 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-sm">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-600/20 rounded-full flex items-center justify-center text-3xl mb-4 mx-auto text-indigo-600 dark:text-indigo-400">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">가치 판단 시뮬레이션</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-8 leading-relaxed">
+                            인공지능이 마주할 수 있는 복잡한 윤리적 상황들,<br>
+                            우리는 어떤 선택을 내려야 할까요?
+                        </p>
+                        
+                        <!-- Link updated to ../01/index.html -->
+                        <a href="../01/index.html" class="inline-flex items-center gap-3 accent-gradient px-10 py-5 rounded-2xl font-bold text-white text-lg hover:scale-105 transition-all shadow-lg shadow-indigo-500/20">
+                            윤리적 딜레마 <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <i class="fas fa-balance-scale text-9xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
 
-<!-- Slide 5: Data Scale -->
-<div class="slide-container" id="slide5">
-    <h2 class="slide-title">인공지능 윤리 담론의 새로운 지평</h2>
-    <div class="content-area">
-        <div class="two-column" style="align-items: center;">
-            <div>
-                <div class="highlight-number">2.3M+</div>
-                <div class="number-label">전 세계 참여자 수 (명)</div>
+    <!-- AI Learning Simulation Section -->
+    <section id="learning" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-12">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-500 text-2xl">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold">인공지능 학습 프로그램</h2>
+                    <p class="text-slate-500 dark:text-slate-400">기계는 어떻게 데이터를 통해 똑똑해질까요?</p>
+                </div>
             </div>
-            <div>
-                <p style="font-size: 24px; line-height: 1.7;">기술적 완성을 넘어, <strong>기계가 사회적으로 수용 가능한 판단</strong>을 내리기 위해서는 인간의 가치관을 데이터화하는 과정이 필수적입니다.</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Slide 7: Rankings Chart -->
-<div class="slide-container" id="slide7">
-    <h2 class="slide-title">인간이 무의식적으로 매기는 '생명의 등급'</h2>
-    <div class="content-area">
-        <div class="bar-container">
-            <div class="bar">
-                <div class="label">1위: 유모차 탄 아이</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 95%;">최상위 보호 대상</div></div>
-            </div>
-            <div class="bar">
-                <div class="label">2위: 소녀 / 소년</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 85%;">상위 보호 대상</div></div>
-            </div>
-            <div class="bar">
-                <div class="label">18위: 범죄자</div>
-                <div class="bar-inner"><div class="bar-fill" style="width: 15%; background: #ef4444; color: #fff;">최하위 희생 대상</div></div>
-            </div>
-        </div>
-        <p style="margin-top: 30px; font-size: 20px; color: var(--text-muted); text-align: center; font-style: italic;">"범죄자는 반려동물보다도 낮은 순위를 기록했습니다."</p>
-    </div>
-</div>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Explanation Cards -->
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="bg-indigo-600 p-6 rounded-2xl shadow-xl shadow-indigo-500/30 text-white">
+                        <h4 class="font-bold text-xl mb-2 italic">Machine Learning</h4>
+                        <p class="text-indigo-100 text-sm font-medium">데이터를 주면 컴퓨터가 스스로 그 속에 숨겨진 '규칙'을 찾아내는 과정입니다.</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl bg-slate-50/50 dark:bg-transparent shadow-sm dark:shadow-none">
+                        <h4 class="font-bold text-lg mb-2">학습의 3단계</h4>
+                        <ul class="text-slate-600 dark:text-slate-400 text-sm space-y-2">
+                            <li class="flex items-center gap-2"><span class="w-5 h-5 bg-slate-200 dark:bg-slate-700 rounded-full text-[10px] flex items-center justify-center">1</span> 데이터 수집</li>
+                            <li class="flex items-center gap-2"><span class="w-5 h-5 bg-slate-200 dark:bg-slate-700 rounded-full text-[10px] flex items-center justify-center">2</span> 모델 훈련 (패턴 파악)</li>
+                            <li class="flex items-center gap-2"><span class="w-5 h-5 bg-slate-200 dark:bg-slate-700 rounded-full text-[10px] flex items-center justify-center">3</span> 새로운 데이터 예측</li>
+                        </ul>
+                    </div>
+                </div>
 
-<!-- Slide 12: Comparison Table -->
-<div class="slide-container" id="slide12">
-    <h2 class="slide-title">인간 vs 인공지능: 편향성의 비교</h2>
-    <div class="content-area">
-        <table>
-            <thead>
-                <tr>
-                    <th>항목</th>
-                    <th>인간의 편향</th>
-                    <th>인공지능의 편향</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>근본 이유</strong></td>
-                    <td>경험, 문화, 사회적 환경</td>
-                    <td>학습 데이터와 알고리즘</td>
-                </tr>
-                <tr>
-                    <td><strong>인식 및 수정</strong></td>
-                    <td>자각하기 어렵고 교육이 필요</td>
-                    <td>수치화 가능, 수정 시 즉각 교정</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+                <!-- Mini Lab Simulator -->
+                <div class="lg:col-span-2 bg-white dark:bg-transparent glass-card rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-xl font-bold">과일 분류기 시뮬레이터 🍎🍊</h3>
+                        <button onclick="resetLab()" class="text-xs text-slate-400 hover:text-indigo-500 dark:hover:text-white uppercase tracking-tighter"><i class="fas fa-undo mr-1"></i> 초기화</button>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div id="drop-zone" class="w-full h-48 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl flex items-center justify-center gap-4 mb-6 transition-all duration-300">
+                            <div id="ai-brain" class="flex flex-col items-center">
+                                <div class="text-5xl mb-4 animate-float"><i class="fas fa-brain text-purple-600 dark:text-purple-400"></i></div>
+                                <p class="text-slate-400 text-sm">학습용 데이터를 아래에서 클릭하여 입력하세요</p>
+                            </div>
+                        </div>
 
-<!-- Slide 14: Quiz & Conclusion -->
-<div class="slide-container" id="slide14">
-    <h2 class="slide-title">오늘의 학습 퀴즈 & 마무리</h2>
-    <div class="content-area">
-        <div class="two-column">
-            <div class="bullet-list">
-                <h3 style="font-size: 24px;">Quiz Challenge</h3>
-                <ul>
-                    <li><i class="fa-solid fa-circle-question"></i> <strong>Q1.</strong> 모럴 머신 연구에서 보호 1위는?</li>
-                    <li><i class="fa-solid fa-circle-question"></i> <strong>Q2.</strong> AI 편향의 근본적인 원인은?</li>
-                </ul>
-            </div>
-            <div style="background: rgba(34, 211, 238, 0.05); padding: 30px; border-radius: 16px;">
-                <h3 style="font-size: 24px; color: var(--white);">최종 생각거리</h3>
-                <p style="font-size: 20px; line-height: 1.8;">"당신이 자율주행차 개발자라면, 어떤 도덕적 가치를 입력하시겠습니까?"</p>
+                        <div class="grid grid-cols-4 gap-4 w-full mb-8">
+                            <button onclick="trainAI('apple')" class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 border border-slate-200 dark:border-slate-700 transition group">
+                                <span class="text-2xl block mb-1 group-hover:scale-125 transition">🍎</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase">사과 추가</span>
+                            </button>
+                            <button onclick="trainAI('apple')" class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 border border-slate-200 dark:border-slate-700 transition group">
+                                <span class="text-2xl block mb-1 group-hover:scale-125 transition">🍎</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase">사과 추가</span>
+                            </button>
+                            <button onclick="trainAI('orange')" class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-slate-200 dark:border-slate-700 transition group">
+                                <span class="text-2xl block mb-1 group-hover:scale-125 transition">🍊</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase">오렌지 추가</span>
+                            </button>
+                            <button onclick="trainAI('orange')" class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-slate-200 dark:border-slate-700 transition group">
+                                <span class="text-2xl block mb-1 group-hover:scale-125 transition">🍊</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase">오렌지 추가</span>
+                            </button>
+                        </div>
+
+                        <div class="w-full bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-500">학습된 데이터 수: <span id="data-count">0</span>건</span>
+                                <span id="model-status" class="text-xs font-bold text-red-500 dark:text-red-400">학습 부족</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-6">
+                                <div id="training-progress" class="h-full bg-indigo-600 dark:bg-indigo-500 w-0 transition-all duration-500"></div>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-slate-400 text-xs mb-2 italic">미지의 과일을 보여주면?</p>
+                                <div id="prediction-result" class="text-2xl font-black text-slate-300 dark:text-slate-600">준비 중...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
 
-<script>
-    function openModal() {
-        document.getElementById('imageModal').style.display = 'flex';
-    }
+    <!-- Footer -->
+    <footer class="py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-400 dark:text-slate-500 text-sm">
+        <p>© 2024 인공지능 기초 수업 - 즐거운 정보 시간</p>
+    </footer>
 
-    function closeModal() {
-        document.getElementById('imageModal').style.display = 'none';
-    }
+    <script>
+        // AI Lab Simulator Logic
+        let appleCount = 0;
+        let orangeCount = 0;
 
-    // 모달 바깥쪽 클릭 시 닫기
-    window.onclick = function(event) {
-        const modal = document.getElementById('imageModal');
-        if (event.target == modal) {
-            closeModal();
+        function trainAI(type) {
+            if (type === 'apple') appleCount++;
+            else orangeCount++;
+
+            const total = appleCount + orangeCount;
+            const progress = Math.min((total / 10) * 100, 100);
+            
+            document.getElementById('data-count').innerText = total;
+            document.getElementById('training-progress').style.width = progress + '%';
+
+            const dropZone = document.getElementById('drop-zone');
+            dropZone.classList.add('border-indigo-500', 'bg-indigo-500/5');
+            setTimeout(() => {
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5');
+            }, 300);
+
+            updatePrediction();
         }
-    }
-</script>
 
+        function updatePrediction() {
+            const total = appleCount + orangeCount;
+            const status = document.getElementById('model-status');
+            const result = document.getElementById('prediction-result');
+
+            if (total < 5) {
+                status.innerText = "데이터 부족";
+                status.classList.remove('text-green-600', 'text-green-400');
+                status.classList.add('text-red-500', 'dark:text-red-400');
+                result.innerText = "준비 중...";
+                result.classList.remove('text-indigo-600', 'dark:text-indigo-400');
+                result.classList.add('text-slate-300', 'dark:text-slate-600');
+            } else {
+                status.innerText = "학습 완료";
+                status.classList.remove('text-red-500', 'dark:text-red-400');
+                status.classList.add('text-green-600', 'dark:text-green-400');
+                
+                if (appleCount > orangeCount) {
+                    result.innerText = "이것은 '사과'일 확률이 높습니다! 🍎";
+                } else if (orangeCount > appleCount) {
+                    result.innerText = "이것은 '오렌지'일 확률이 높습니다! 🍊";
+                } else {
+                    result.innerText = "판단이 어렵습니다 (데이터 동률) 🤔";
+                }
+                result.classList.remove('text-slate-300', 'dark:text-slate-600');
+                result.classList.add('text-indigo-600', 'dark:text-indigo-400');
+            }
+        }
+
+        function resetLab() {
+            appleCount = 0;
+            orangeCount = 0;
+            document.getElementById('data-count').innerText = "0";
+            document.getElementById('training-progress').style.width = '0%';
+            updatePrediction();
+        }
+    </script>
 </body>
 </html>
